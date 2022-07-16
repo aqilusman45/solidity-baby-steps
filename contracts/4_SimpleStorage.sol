@@ -20,6 +20,9 @@ contract SimpleStorage {
     bytes32 myPetName = "tom"; // similar to string but can also be converted into byte object like 0x1039212312werewr1233
     int256 rainPercentage; // if not initialized it defaults to zero.
 
+    // Mappings
+    mapping(string => uint256) public nameToFavoriteNumber;
+
     // functions in sol.
     function getRainPercentage(int256 _forecast) public {
         rainPercentage = _forecast;
@@ -34,7 +37,8 @@ contract SimpleStorage {
     }
 
     // scope in sol.
-    function getNewNumber() public view returns (int256) { // example of view function
+    function getNewNumber() public view returns (int256) {
+        // example of view function
         // newNumber variable is not accessible in this
         // function as it is outside its scope.
         return rainPercentage;
@@ -45,7 +49,66 @@ contract SimpleStorage {
 
     // view function -> these functions just read a state in the contract.
     // pure function -> these functions returns same output for same input and have no side effect.
-    function addNumber(int _a, int _b) public pure returns (int) {
+    function addNumber(int256 _a, int256 _b) public pure returns (int256) {
         return _a + _b;
     }
+
+    // structs, like objects in javascript, the order of fields in struct is numbered.
+    // for example, favoriteNumber is at index 0 and name is at index 1
+    struct People {
+        uint256 favoriteNumber;
+        string name;
+    }
+
+    People public person = People({favoriteNumber: 2, name: "Usman"});
+
+    // arrays, below is a dynamic array,
+    // it does not have a size specified in the square bracket like [2].
+    People[] public people;
+
+    function addPeople(string memory _name, uint256 _favoriteNumber) public {
+        People memory newPerson1 = People({
+            favoriteNumber: _favoriteNumber,
+            name: _name
+        });
+        // we can also create an object by providing
+        // arguments based on position, e.g, favoriteNumber is
+        // first param for People struct and name is the seconde.
+        People memory newPerson2 = People(_favoriteNumber, _name);
+        // push is an array method that allows us to insert element into an array
+        people.push(newPerson1);
+        people.push(newPerson2);
+        people.push(People(_favoriteNumber, _name));
+        nameToFavoriteNumber[_name] = _favoriteNumber;
+    }
+
+    // there are 6 places in solidity where we can store data.
+    // - Stack
+    // - Memory -> Temporary existence only during the transaction that the functions call
+    //   memory variable can be reassigned in the function call.
+    // - Calldata -> Temporary existence only during the transaction that the functions call,
+    //   calldata cannot be reassigned in the function.
+    // - Code
+    // - Logs
+    // - Storage 
+
+    // example with memory
+    function run (string memory _miles) public pure returns (string memory) {
+        _miles = "3 miles"; // can be reassinged.
+        return _miles;
+    }
+
+    // example with calldata
+    function hide(string calldata place) public pure returns (string memory) {
+        // place = "closet"; cannot be reassigned will throw error.
+        return place;
+    }
+
+    // solidy only requires data location for array, struct, and mapping types.
+    // now you may ask why give data location such as memory or calldata for strings.
+    // for that strings are complex and are basically arrays of bytes.
+    // so that is why this wont work func (uint256 memory _newInt) {}
+
+    // we cant use storage keyword instead of memory or calldata
+    // as storage keyword is only used for permanent variables.
 }
