@@ -24,7 +24,7 @@ contract SimpleStorage {
     mapping(string => uint256) public nameToFavoriteNumber;
 
     // functions in sol.
-    function storeRainPercentage(int256 _forecast) public {
+    function storeRainPercentage(int256 _forecast) public virtual {
         rainPercentage = _forecast;
         // execution of the smart contract requires gas
         // the amount of gas required depends on the computation power consumed.
